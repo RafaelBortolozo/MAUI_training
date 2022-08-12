@@ -58,4 +58,10 @@
 	  <Folder Include="ModelView\" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <MauiXaml Update="View\TestPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>

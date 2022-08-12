@@ -1,0 +1,17 @@
+﻿
+@page "/"
+@using MauiApp1
+
+<h1>Hello, world!</h1>
+
+@{
+    var user = new User();
+    var users = user.GetExampleListUsers();
+}
+
+@foreach(var item in users)
+{
+    <p>@item.Id, @item.Name, @item.Email, @item.Cpf</p>
+}
+
+<SurveyPrompt Title="How is Blazor working for you?" />
