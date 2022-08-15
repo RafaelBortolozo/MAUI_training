@@ -1,17 +1,15 @@
-﻿
-@page "/"
-@using MauiApp1
+﻿@page "/"
+@using MudBlazor
 
-<h1>Hello, world!</h1>
+<style>
+    body {
+        margin: 0 10%;
+        background-color: lightgray;
+    }
+</style>
 
-@{
-    var user = new User();
-    var users = user.GetExampleListUsers();
-}
+<h1>Usuários</h1>
 
-@foreach(var item in users)
-{
-    <p>@item.Id, @item.Name, @item.Email, @item.Cpf</p>
-}
+<TableSelectFilter/>
 
 <SurveyPrompt Title="How is Blazor working for you?" />

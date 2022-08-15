@@ -1,85 +1,66 @@
-﻿@using MudBlazor
-@inject HttpClient httpClient
+﻿@using MauiBlazor
 
-<style>
-    .selected {
-        background-color: #1E88E5 !important;
-    }
-
-    .selected > td {
-        color: white !important;
-    }
-
-    .selected > td .mud-input {
-        color: white !important;
-    }
-</style>
-
-<MudTable Items="@Elements.Take(4)" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable" RowClassFunc="@SelectedRowClassFunc" OnRowClick="RowClickEvent" T="Element">
+<MudTable Items="@Users" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<User,bool>(FilterFunction)" @bind-SelectedItem="selectedUser">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Users</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
     <HeaderContent>
-        <MudTh>Nr</MudTh>
-        <MudTh>Sign</MudTh>
+        <MudTh>Id</MudTh>
         <MudTh>Name</MudTh>
-        <MudTh>Position</MudTh>
-        <MudTh>Molar mass</MudTh>
+        <MudTh>Email</MudTh>
+        <MudTh>Cpf</MudTh>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Nr">@context.Number</MudTd>
-        <MudTd DataLabel="Sign">@context.Sign</MudTd>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
         <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Position">@context.Position</MudTd>
-        <MudTd DataLabel="Molar mass">@context.Molar</MudTd>
+        <MudTd DataLabel="Email">@context.Email</MudTd>
+        <MudTd DataLabel="Cpf">@context.Cpf</MudTd>
     </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
 </MudTable>
-<MudExpansionPanels Style="flex: 1;">
-    <MudExpansionPanel Text="Show inline-clicked event log">
-        @foreach (var message in clickedEvents)
-        {
-                <MudText>@message</MudText>
-        }
-        @if (clickedEvents.Count > 0)
-        {
-                <div class="d-flex">
-                    <MudSpacer/>
-                    <MudButton Class="mt-3" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="@(() => clickedEvents.Clear())">Clear events</MudButton>
-                </div>
-        }
-    </MudExpansionPanel>
-</MudExpansionPanels>
+
+<div class="d-flex flex-wrap mt-4">
+    <MudSpacer />
+    <div style="min-width:200px;">
+        <MudText Inline="true" Class="align-self-center">Selected: @selectedUser?.Name</MudText>
+    </div>
+</div>
+
 
 @code {
-    private int selectedRowNumber = -1;
-    private MudTable<Element> mudTable;
-    private List<string> clickedEvents = new();
-    private IEnumerable<Element> Elements = new List<Element>()
-    {
-        new Element() { Number = 1, Sign = "H", Name = "Hydrogen", Position = 0, Molar = 1.00794 },
-        new Element() { Number = 2, Sign = "He", Name = "Helium", Position = 17, Molar = 4.002602 },
-        new Element() { Number = 3, Sign = "Li", Name = "Lithium", Position = 0, Molar = 6.941 }
-    };
+    private bool dense = true;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = false;
+    private string searchString = "";
+    private User selectedUser = null;
+    private HashSet<User> selectedItems = new HashSet<User>();
 
-    private void RowClickEvent(TableRowClickEventArgs<Element> tableRowClickEventArgs)
+    List<User> Users = new List<User>();
+
+    protected override void OnInitialized()
     {
-        clickedEvents.Add("Row has been clicked");
+        Users = new User().GetExampleListUsers();
     }
 
-    private string SelectedRowClassFunc(Element element, int rowNumber)
+    private bool FilterFunction(User user) => FilterFunc(user, searchString);
+
+    private bool FilterFunc(User user, string searchString)
     {
-        if (selectedRowNumber == rowNumber)
-        {
-            selectedRowNumber = -1;
-            clickedEvents.Add("Selected Row: None");
-            return string.Empty;
-        }
-        else if (mudTable.SelectedItem != null && mudTable.SelectedItem.Equals(element))
-        {
-            selectedRowNumber = rowNumber;
-            clickedEvents.Add($"Selected Row: {rowNumber}");
-            return "selected";
-        }
-        else
-        {
-            return string.Empty;
-        }
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (user.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (user.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (user.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (user.Cpf.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
     }
 }
