@@ -40,11 +40,11 @@
     private User selectedUser = null;
     private HashSet<User> selectedItems = new HashSet<User>();
 
-    List<User> Users = new List<User>();
+    List<User> Users;
 
     protected override void OnInitialized()
     {
-        Users = new User().GetExampleListUsers();
+        Users = User.GetExampleListUsers();
     }
 
     private bool FilterFunction(User user) => FilterFunc(user, searchString);

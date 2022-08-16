@@ -10,6 +10,15 @@
 
 <h1>Usuários</h1>
 
+<div class="fields">
+    <MudTextField @bind-Value="SelectedUser.Name" Label="User" ReadOnly="true" Variant="Variant.Text" />
+    
+</div>
+
 <TableSelectFilter/>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code{
+    public List<User> Users { get; set; } = User.GetExampleListUsers();
+    public User SelectedUser { get; set; }
+    public string SelectedUserName { get; set; } = "";
+}
