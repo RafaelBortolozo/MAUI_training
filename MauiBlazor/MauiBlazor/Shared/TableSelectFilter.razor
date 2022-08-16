@@ -44,7 +44,7 @@
 
     protected override void OnInitialized()
     {
-        Users = User.GetExampleListUsers();
+        Users = User.ExampleListUsers;
     }
 
     private bool FilterFunction(User user) => FilterFunc(user, searchString);

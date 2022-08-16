@@ -58,6 +58,7 @@
     <ItemGroup>
       <Content Remove="Shared\Component1.razor" />
       <Content Remove="Shared\Index1.cshtml" />
+      <Content Remove="Shared\TableSelectFilter.razor" />
       <Content Remove="Shared\TableSelectFilter.razor.razor" />
     </ItemGroup>
 
