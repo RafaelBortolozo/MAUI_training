@@ -15,8 +15,14 @@
 <div class="container">
     <h1>Mud components</h1>
 
+    <div class="mt-4 mb-4">
+        <p>Id: @selectedUser.Id</p>
+        <p>Name: @selectedUser.Name</p>
+        <p>Email: @selectedUser.Email</p>
+    </div>
+
     <div class="d-flex justify-content-evenly mb-4">
-        <MudSelect Class="mr-4" @bind-Value="@selectedUser.Name" T="string" Label="Lista de usuários" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
+        <MudSelect Class="mr-4" @bind-Value="@selectedUser.Name" @bind-SelectedItem="selectedUser" T="string" Dense="true" Label="Lista de usuários" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
             @foreach (var user in Users)
             {
                 <MudSelectItem Value="@user.Name" />
@@ -29,7 +35,7 @@
         <MudTable Items="@Users" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<User,bool>(FilterFunction)" @bind-SelectedItem="selectedUser">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Usuários</MudText>
-                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
             </ToolBarContent>
             <HeaderContent>
                 <MudTh>Guid</MudTh>
@@ -52,14 +58,14 @@
     </div>
 
     <div class="d-flex justify-content-evenly mb-4 mt-4">
-        <MudSelect Class="mr-4" @bind-Value="@selectedUser.Name" T="string" Label="Lista de usuários" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
+        <MudSelect Class="mr-4" @bind-Value="@selectedUser.Name" T="string" Dense="true" Label="Lista de usuários" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
             @foreach (var user in Users)
             {
                 <MudSelectItem Value="@user.Name" />
             }
         </MudSelect>
-        <MudSelect T="string" @bind-Value="@selectedUser.ListActions.ExampleListActions[0]" Label="Actions" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
-            @foreach (var action in selectedUser.ListActions.ExampleListActions)
+        <MudSelect Class="mr-4" @bind-Value="@selectedUser.Actions[0]" T="string" Dense="true" Label="Lista de ações" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
+            @foreach (var action in selectedUser?.Actions)
             {
                 <MudSelectItem Value="@action" />
             }
@@ -70,7 +76,6 @@
 
 @code{
     public IEnumerable<User> Users { get; set; }
-    public IEnumerable<string> Actions { get; set; }
 
     private bool dense = true;
     private bool hover = true;
@@ -78,9 +83,11 @@
     private bool bordered = false;
     private string searchString = "";
     private User selectedUser = new User();
-    private HashSet<User> selectedItems = new HashSet<User>();
+    
 
-    protected override void OnInitialized() => Users = User.ExampleListUsers.AsEnumerable();
+    protected override void OnInitialized() {
+        Users = User.ExampleListUsers.AsEnumerable();
+    }
 
     private bool FilterFunction(User user) => FilterFunc(user, searchString);
 

@@ -2,7 +2,10 @@ namespace MauiBlazor;
 
 public class User
 {
-    public User() { }
+    public User() 
+    {
+        
+    }
     public User(int id, string name, string email, string cpf)
     {
         Id = id;
@@ -10,7 +13,11 @@ public class User
         Name = name;
         Email = email;
         Cpf = cpf;
-        ListActions = new Actions(id);
+        Actions = new List<string>();
+        for (var i = 1; i<6; i++)
+        {
+            Actions.Add($"User{id} - Action{i}");
+        }
     }
 
     public Guid GUID { get; set; }
@@ -18,7 +25,7 @@ public class User
     public string Name { get; set; }
     public string Email { get; set; }
     public string Cpf { get; set; }
-    public Actions ListActions { get; set; } = new Actions();
+    public List<string> Actions { get; set; }
     public static List<User> ExampleListUsers { get; set; } = new List<User>
     {
         new User(1,"Nome Completo 1", "email_1@gmail.com", "951.912.615-17"),
@@ -40,19 +47,21 @@ public class User
 
     public User getUserByGUID(Guid guid) => ExampleListUsers.FirstOrDefault(x => x.GUID.Equals(guid));
 
-    public class Actions{
-        public Actions() { }
-        public Actions(int id)
+    public class Action{
+        public Action() 
+        {
+
+        }
+        public Action(int id)
         {
             GUID = Guid.NewGuid();
-            ExampleListActions = new List<string>();
             for(var i=1 ; i<6 ; i++)
             {
                 ExampleListActions.Add($"User{id} - Action{i}");
             }
         }
 
-        public List<string> ExampleListActions { get; set; }
+        public List<string> ExampleListActions { get; set; } = new List<string>();
         public Guid GUID { get; set; }
 
     }
