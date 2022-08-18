@@ -1,7 +1,7 @@
 ﻿@page "/"
+@using MauiBlazor.UserContext
+@using MauiBlazor.UserContext.Data
 @using MudBlazor
-@using MauiBlazor
-@using static MauiBlazor.User
 
 <style>
     body {
@@ -64,12 +64,6 @@
                 <MudSelectItem Value="@user.Name" />
             }
         </MudSelect>
-        <MudSelect Class="mr-4" @bind-Value="@selectedUser.Actions[0]" T="string" Dense="true" Label="Lista de ações" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
-            @foreach (var action in selectedUser?.Actions)
-            {
-                <MudSelectItem Value="@action" />
-            }
-        </MudSelect>
     </div>
 
 </div>
@@ -86,7 +80,7 @@
     
 
     protected override void OnInitialized() {
-        Users = User.ExampleListUsers.AsEnumerable();
+        Users = ExampleUsers.ExampleListUsers.AsEnumerable();
     }
 
     private bool FilterFunction(User user) => FilterFunc(user, searchString);
