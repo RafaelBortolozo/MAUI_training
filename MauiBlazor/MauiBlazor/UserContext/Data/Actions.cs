@@ -36,6 +36,8 @@ namespace MauiBlazor.UserContext.Data
                     actions.Add(EActions.Action14);
                     actions.Add(EActions.Action15);
                     break;
+                default:
+                    break;
             }
             return actions;
         }

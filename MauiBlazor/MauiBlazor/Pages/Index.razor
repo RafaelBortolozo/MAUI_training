@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using MauiBlazor.UserContext
 @using MauiBlazor.UserContext.Data
+@using MauiBlazor.UserContext.Enums
 @using MudBlazor
 
 <style>
@@ -15,20 +16,27 @@
 <div class="container">
     <h1>Mud components</h1>
 
-    <div class="mt-4 mb-4">
-        <p>Id: @selectedUser.Id</p>
-        <p>Name: @selectedUser.Name</p>
-        <p>Email: @selectedUser.Email</p>
-    </div>
-
     <div class="d-flex justify-content-evenly mb-4">
-        <MudSelect Class="mr-4" @bind-Value="@selectedUser.Name" @bind-SelectedItem="selectedUser" T="string" Dense="true" Label="Lista de usuários" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
-            @foreach (var user in Users)
+        <MudSelect Class="mr-4" 
+            @bind-value="@selectedUser" 
+            T="User"
+            ToStringFunc="@getNameString"
+            Dense="true" 
+            Label="Lista de usuários" 
+            Variant="Variant.Filled" 
+            AnchorOrigin="Origin.BottomCenter">
+
+            @foreach (User user in Users)
             {
-                <MudSelectItem Value="@user.Name" />
+                <MudSelectItem Value="@user" />
             }
         </MudSelect>
-        <MudTextField Class="ml-4" @bind-Value="@selectedUser.Name" Label="Usuário selecionado" ReadOnly="true" Variant="Variant.Filled" />
+        <MudTextField 
+            Class="ml-4" 
+            @bind-Value="@selectedUser.Name" 
+            Label="Usuário selecionado" 
+            ReadOnly="true" 
+            Variant="Variant.Filled" />
     </div>
 
     <div class="table">
@@ -57,11 +65,34 @@
         </MudTable>
     </div>
 
-    <div class="d-flex justify-content-evenly mb-4 mt-4">
-        <MudSelect Class="mr-4" @bind-Value="@selectedUser.Name" T="string" Dense="true" Label="Lista de usuários" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter">
-            @foreach (var user in Users)
+    <div class="d-flex justify-content-evenly mb-4">
+        <MudSelect Class="mr-4"
+                   @bind-value="@selectedProfile"
+                   T="Profile"
+                   ToStringFunc="@getProfileString"
+                   Dense="true"
+                   Label="Lista de Perfis"
+                   Variant="Variant.Filled"
+                   AnchorOrigin="Origin.BottomCenter">
+
+            @foreach (Profile profile in selectedUser.Profiles)
             {
-                <MudSelectItem Value="@user.Name" />
+                <MudSelectItem Value="@profile" />
+            }
+        </MudSelect>
+
+        <MudSelect Class="mr-4"
+                   @bind-value="@selectedAuthorizedAction"
+                   T="EActions"
+                   ToStringFunc="@getAuthorizedActionString"
+                   Dense="true"
+                   Label="Lista de Ações permitidas"
+                   Variant="Variant.Filled"
+                   AnchorOrigin="Origin.BottomCenter">
+
+            @foreach (EActions action in selectedProfile.AuthorizedActions)
+            {
+                <MudSelectItem Value="@action" />
             }
         </MudSelect>
     </div>
@@ -77,10 +108,12 @@
     private bool bordered = false;
     private string searchString = "";
     private User selectedUser = new User();
-    
+    private Profile selectedProfile = new Profile();
+    private EActions selectedAuthorizedAction;
+
 
     protected override void OnInitialized() {
-        Users = ExampleUsers.ExampleListUsers.AsEnumerable();
+        Users = ExampleUsers.ExampleListUsers;
     }
 
     private bool FilterFunction(User user) => FilterFunc(user, searchString);
@@ -99,4 +132,8 @@
             return true;
         return false;
     }
+
+    Func<User, string> getNameString = p => p?.Name;
+    Func<Profile, string> getProfileString = p => p?.AccessLevel == EAccessLevel.Nothing ? "" : p?.AccessLevel.ToString();
+    Func<EActions, string> getAuthorizedActionString = p => p.ToString() == "0" ? "" : p.ToString();
 }
