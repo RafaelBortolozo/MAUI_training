@@ -16,27 +16,77 @@
 <div class="container">
     <h1>Mud components</h1>
 
-    <div class="d-flex justify-content-evenly mb-4">
-        <MudSelect Class="mr-4" 
-            @bind-value="@selectedUser" 
-            T="User"
-            ToStringFunc="@getNameString"
-            Dense="true" 
-            Label="Lista de usuários" 
-            Variant="Variant.Filled" 
-            AnchorOrigin="Origin.BottomCenter">
+    <div id="fields" class="d-flex justify-content-evenly mb-4">
+        <MudSelect Class="mr-2"
+                   @bind-value="@selectedUser"
+                   T="User"
+                   ToStringFunc="getNameString"
+                   Dense="true"
+                   Margin="Margin.Dense"
+                   Clearable
+                   Label="Usuários"
+                   Variant="Variant.Filled"
+                   AnchorOrigin="Origin.BottomCenter">
 
-            @foreach (User user in Users)
+                @foreach (var user in Users)
+                {
+                    <MudSelectItem Value=@user />
+                }
+            
+
+            
+        </MudSelect>
+
+        <MudTextField Class="ml-2 mr-2"
+                      @bind-Value="@selectedUser.Name"
+                      Label="Usuário selecionado"
+                      Disabled="true"
+                      Margin="Margin.Dense"
+                      Variant="Variant.Filled" />
+
+        <MudSelect Class="ml-2 mr-2"
+                   @bind-value="@selectedProfile"
+                   T="Profile"
+                   ToStringFunc="@getProfileString"
+                   Dense="true"
+                   Margin="Margin.Dense"
+                   Clearable
+                   Label="Perfis"
+                   Variant="Variant.Filled"
+                   AnchorOrigin="Origin.BottomCenter">
+
+            
+            @foreach (Profile profile in selectedUser.Profiles)
             {
-                <MudSelectItem Value="@user" />
+                <MudSelectItem Value="@profile" />
             }
         </MudSelect>
-        <MudTextField 
-            Class="ml-4" 
-            @bind-Value="@selectedUser.Name" 
-            Label="Usuário selecionado" 
-            ReadOnly="true" 
-            Variant="Variant.Filled" />
+
+        <MudSelect Class="ml-2"
+                   @bind-value="@selectedAuthorizedAction"
+                   T="EActions"
+                   ToStringFunc="@getAuthorizedActionString"
+                   Dense="true"
+                   Margin="Margin.Dense"
+                   Clearable
+                   Label="Ações permitidas"
+                   Variant="Variant.Filled"
+                   AnchorOrigin="Origin.BottomCenter">
+            
+            @if (selectedProfile != null)
+            {
+                @foreach (EActions action in selectedProfile.AuthorizedActions)
+                {
+                    <MudSelectItem Value="@action" />
+                }
+            }
+            else
+            {
+                <MudSelectItem Value="EActions.Action1" />
+            }
+
+            
+        </MudSelect>
     </div>
 
     <div class="table">
@@ -65,42 +115,10 @@
         </MudTable>
     </div>
 
-    <div class="d-flex justify-content-evenly mb-4">
-        <MudSelect Class="mr-4"
-                   @bind-value="@selectedProfile"
-                   T="Profile"
-                   ToStringFunc="@getProfileString"
-                   Dense="true"
-                   Label="Lista de Perfis"
-                   Variant="Variant.Filled"
-                   AnchorOrigin="Origin.BottomCenter">
-
-            @foreach (Profile profile in selectedUser.Profiles)
-            {
-                <MudSelectItem Value="@profile" />
-            }
-        </MudSelect>
-
-        <MudSelect Class="mr-4"
-                   @bind-value="@selectedAuthorizedAction"
-                   T="EActions"
-                   ToStringFunc="@getAuthorizedActionString"
-                   Dense="true"
-                   Label="Lista de Ações permitidas"
-                   Variant="Variant.Filled"
-                   AnchorOrigin="Origin.BottomCenter">
-
-            @foreach (EActions action in selectedProfile.AuthorizedActions)
-            {
-                <MudSelectItem Value="@action" />
-            }
-        </MudSelect>
-    </div>
-
 </div>
 
 @code{
-    public IEnumerable<User> Users { get; set; }
+    public IList<User> Users { get; set; }
 
     private bool dense = true;
     private bool hover = true;
@@ -108,7 +126,7 @@
     private bool bordered = false;
     private string searchString = "";
     private User selectedUser = new User();
-    private Profile selectedProfile = new Profile();
+    private Profile selectedProfile = null;
     private EActions selectedAuthorizedAction;
 
 
@@ -136,4 +154,10 @@
     Func<User, string> getNameString = p => p?.Name;
     Func<Profile, string> getProfileString = p => p?.AccessLevel == EAccessLevel.Nothing ? "" : p?.AccessLevel.ToString();
     Func<EActions, string> getAuthorizedActionString = p => p.ToString() == "0" ? "" : p.ToString();
+
+    private User resetUser()
+    {
+        return new User();
+    }
+
 }

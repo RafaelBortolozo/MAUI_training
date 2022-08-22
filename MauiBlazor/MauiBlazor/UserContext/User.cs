@@ -19,12 +19,26 @@ public class User
         Name = name;
         Email = email;
         Cpf = cpf;
-        Profiles = new List<Profile>
+        
+        if (id == 5)
         {
-            new Profile($"email{id}_client@gmail.com", Enums.EAccessLevel.Client),
-            new Profile($"email{id}_admin@gmail.com", Enums.EAccessLevel.Administrator),
-            new Profile($"email{id}_dev@gmail.com", Enums.EAccessLevel.Developer)
-        };
+            Profiles = new List<Profile>
+            {
+                new Profile($"email{id}_admin@gmail.com", Enums.EAccessLevel.Administrator),
+                new Profile($"email{id}_dev@gmail.com", Enums.EAccessLevel.Developer)
+            };
+        }
+        else
+        {
+            Profiles = new List<Profile>
+            {
+                new Profile($"email{id}_client@gmail.com", Enums.EAccessLevel.Client),
+                new Profile($"email{id}_admin@gmail.com", Enums.EAccessLevel.Administrator),
+                new Profile($"email{id}_dev@gmail.com", Enums.EAccessLevel.Developer)
+            };
+        }
+        
+        
     }
 
     public Guid? GUID { get; set; }
