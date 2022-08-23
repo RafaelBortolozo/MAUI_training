@@ -1,13 +1,9 @@
 ﻿using MauiBlazor.UserContext.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MauiBlazor.UserContext.Data
 {
-    public class Actions { 
+    public class Actions
+    {
         public static List<EActions> GetListActions(EAccessLevel accessLevel)
         {
             var actions = new List<EActions>();

@@ -12,6 +12,7 @@ public class User
     {
         Profiles = new List<Profile> { new Profile() };
     }
+
     public User(int id, string name, string email, string cpf)
     {
         Id = id;
@@ -46,5 +47,5 @@ public class User
     public string Name { get; set; }
     public string Email { get; set; }
     public string Cpf { get; set; }
-    public IList<Profile> Profiles { get; set; }
+    public List<Profile> Profiles { get; set; }
 }

@@ -6,91 +6,82 @@
 
 <style>
     body {
-        padding: 0 10%;
+        
         background: rgb(161,159,207);
         background: linear-gradient(45deg, rgba(161,159,207,0.5) 0%, rgba(155,199,201,0.5) 50%, rgba(183,212,161,0.5) 100%);
         min-height: 100vh;
     }
 </style>
 
-<div class="container">
+<MudContainer Fixed="true">
     <h1>Mud components</h1>
 
-    <div id="fields" class="d-flex justify-content-evenly mb-4">
-        <MudSelect Class="mr-2"
-                   @bind-value="@selectedUser"
-                   T="User"
-                   ToStringFunc="getNameString"
-                   Dense="true"
-                   Margin="Margin.Dense"
-                   Clearable
-                   Label="Usuários"
-                   Variant="Variant.Filled"
-                   AnchorOrigin="Origin.BottomCenter">
+    <MudSelect 
+               @bind-value="@selectedUser"
+               T="User"
+               ToStringFunc="getNameString"
+               Dense="true"
+               Margin="Margin.Dense"
+               Clearable="true"
+               Label="Usuários"
+               Variant="Variant.Filled"
+               AnchorOrigin="Origin.BottomCenter">
 
-                @foreach (var user in Users)
-                {
-                    <MudSelectItem Value=@user />
-                }
-            
 
-            
-        </MudSelect>
+        @foreach (User user in Users)
+        {
+            <MudSelectItem Value=@user />
+        }
+    </MudSelect>
 
-        <MudTextField Class="ml-2 mr-2"
-                      @bind-Value="@selectedUser.Name"
-                      Label="Usuário selecionado"
-                      Disabled="true"
-                      Margin="Margin.Dense"
-                      Variant="Variant.Filled" />
 
-        <MudSelect Class="ml-2 mr-2"
-                   @bind-value="@selectedProfile"
-                   T="Profile"
-                   ToStringFunc="@getProfileString"
-                   Dense="true"
-                   Margin="Margin.Dense"
-                   Clearable
-                   Label="Perfis"
-                   Variant="Variant.Filled"
-                   AnchorOrigin="Origin.BottomCenter">
+    <MudField Label="Usuário selecionado"
+              Dense="true"
+              Variant="Variant.Filled">
+        @selectedUser?.Name
+    </MudField>
 
-            
-            @foreach (Profile profile in selectedUser.Profiles)
-            {
-                <MudSelectItem Value="@profile" />
-            }
-        </MudSelect>
 
-        <MudSelect Class="ml-2"
-                   @bind-value="@selectedAuthorizedAction"
-                   T="EActions"
-                   ToStringFunc="@getAuthorizedActionString"
-                   Dense="true"
-                   Margin="Margin.Dense"
-                   Clearable
-                   Label="Ações permitidas"
-                   Variant="Variant.Filled"
-                   AnchorOrigin="Origin.BottomCenter">
-            
-            @if (selectedProfile != null)
-            {
-                @foreach (EActions action in selectedProfile.AuthorizedActions)
-                {
-                    <MudSelectItem Value="@action" />
-                }
-            }
-            else
-            {
-                <MudSelectItem Value="EActions.Action1" />
-            }
+    <MudSelect 
+               @bind-value="@selectedProfile"
+               T="Profile"
+               ToStringFunc="@getProfileString"
+               Dense="true"
+               Margin="Margin.Dense"
+               Clearable
+               Label="Perfis"
+               Variant="Variant.Filled"
+               AnchorOrigin="Origin.BottomCenter">
 
-            
-        </MudSelect>
-    </div>
+
+        @foreach (Profile profile in getProfiles())
+        {
+            <MudSelectItem Value="@profile" />
+        }
+    </MudSelect>
+
+
+    <MudSelect 
+               @bind-value="@selectedAuthorizedAction"
+               T="EActions"
+               ToStringFunc="@getAuthorizedActionString"
+               Dense="true"
+               Margin="Margin.Dense"
+               Clearable
+               Label="Ações permitidas"
+               Variant="Variant.Filled"
+               AnchorOrigin="Origin.BottomCenter">
+
+
+        @*@foreach (var action in selectedProfile.AuthorizedActions)
+        {
+            <MudSelectItem Value="@action" />
+        }*@
+    </MudSelect>
+
 
     <div class="table">
-        <MudTable Items="@Users" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<User,bool>(FilterFunction)" @bind-SelectedItem="selectedUser">
+        <MudTable Items="@Users" Dense="true" Hover="true" Bordered="false" Striped="true" Filter="new Func<User,bool>(FilterFunction)" @bind-SelectedItem="selectedUser">
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Usuários</MudText>
                 <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
@@ -114,19 +105,16 @@
             </PagerContent>
         </MudTable>
     </div>
+</MudContainer>
 
-</div>
-
+   
 @code{
     public IList<User> Users { get; set; }
 
-    private bool dense = true;
-    private bool hover = true;
-    private bool striped = true;
-    private bool bordered = false;
+
     private string searchString = "";
     private User selectedUser = new User();
-    private Profile selectedProfile = null;
+    private Profile selectedProfile = new Profile();
     private EActions selectedAuthorizedAction;
 
 
@@ -152,12 +140,16 @@
     }
 
     Func<User, string> getNameString = p => p?.Name;
-    Func<Profile, string> getProfileString = p => p?.AccessLevel == EAccessLevel.Nothing ? "" : p?.AccessLevel.ToString();
+    Func<Profile, string> getProfileString = p => p?.AccessLevel == EAccessLevel.Nothing || p == null ? "" : p?.AccessLevel.ToString();
     Func<EActions, string> getAuthorizedActionString = p => p.ToString() == "0" ? "" : p.ToString();
 
-    private User resetUser()
+    private List<Profile> getProfiles()
     {
-        return new User();
-    }
+        if (selectedUser != null)
+        {
+            return selectedUser.Profiles;
+        }
 
+        return new List<Profile>() { new Profile() };
+    }
 }
