@@ -6,7 +6,6 @@
 
 <style>
     body {
-        
         background: rgb(161,159,207);
         background: linear-gradient(45deg, rgba(161,159,207,0.5) 0%, rgba(155,199,201,0.5) 50%, rgba(183,212,161,0.5) 100%);
         min-height: 100vh;
@@ -26,7 +25,6 @@
                Label="Usuários"
                Variant="Variant.Filled"
                AnchorOrigin="Origin.BottomCenter">
-
 
         @foreach (User user in Users)
         {
@@ -49,10 +47,10 @@
                Dense="true"
                Margin="Margin.Dense"
                Clearable
+               Disabled=@(selectedUser != null ? false : true)
                Label="Perfis"
                Variant="Variant.Filled"
                AnchorOrigin="Origin.BottomCenter">
-
 
         @foreach (Profile profile in getProfiles())
         {
@@ -68,15 +66,15 @@
                Dense="true"
                Margin="Margin.Dense"
                Clearable
+               Disabled=@(selectedProfile != null ? false : true)
                Label="Ações permitidas"
                Variant="Variant.Filled"
                AnchorOrigin="Origin.BottomCenter">
 
-
-        @*@foreach (var action in selectedProfile.AuthorizedActions)
+        @foreach (var action in getAuthorizedActions())
         {
             <MudSelectItem Value="@action" />
-        }*@
+        }
     </MudSelect>
 
 
@@ -111,11 +109,10 @@
 @code{
     public IList<User> Users { get; set; }
 
-
     private string searchString = "";
-    private User selectedUser = new User();
-    private Profile selectedProfile = new Profile();
-    private EActions selectedAuthorizedAction;
+    public User selectedUser = null;
+    public Profile selectedProfile = null;
+    public EActions selectedAuthorizedAction;
 
 
     protected override void OnInitialized() {
@@ -140,7 +137,7 @@
     }
 
     Func<User, string> getNameString = p => p?.Name;
-    Func<Profile, string> getProfileString = p => p?.AccessLevel == EAccessLevel.Nothing || p == null ? "" : p?.AccessLevel.ToString();
+    Func<Profile, string> getProfileString = p => p == null || p?.AccessLevel == EAccessLevel.Nothing? "" : p?.AccessLevel.ToString();
     Func<EActions, string> getAuthorizedActionString = p => p.ToString() == "0" ? "" : p.ToString();
 
     private List<Profile> getProfiles()
@@ -148,8 +145,25 @@
         if (selectedUser != null)
         {
             return selectedUser.Profiles;
+        } 
+        else
+        {
+            return new List<Profile>() { new Profile() };
+        }
+    }
+
+    private List<EActions> getAuthorizedActions()
+    {
+        var actions = new List<EActions>();
+        try
+        {
+            actions = selectedProfile.AuthorizedActions;
+        }
+        catch
+        {
+            actions.Add(EActions.Action1);
         }
 
-        return new List<Profile>() { new Profile() };
+        return actions;
     }
 }
