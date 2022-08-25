@@ -8,78 +8,85 @@
     body {
         background: rgb(161,159,207);
         background: linear-gradient(45deg, rgba(161,159,207,0.5) 0%, rgba(155,199,201,0.5) 50%, rgba(183,212,161,0.5) 100%);
-        min-height: 100vh;
+        padding: 0 0 70px 0;
     }
 </style>
 
 <MudContainer Fixed="true">
     <h1>Mud components</h1>
 
-    <MudSelect 
-               @bind-value="@selectedUser"
-               T="User"
-               ToStringFunc="getNameString"
-               Dense="true"
-               Margin="Margin.Dense"
-               Clearable="true"
-               Label="Usuários"
-               Variant="Variant.Filled"
-               AnchorOrigin="Origin.BottomCenter">
+    <MudGrid Class="mb-4">
+        <MudItem xs="6">
+            <MudSelect @bind-value="@selectedUser"
+                       T="User"
+                       ToStringFunc="getNameString"
+                       Strict="true"
+                       Dense="true"
+                       TextUpdateSuppression="false"
+                       Margin="Margin.Dense"
+                       Clearable="true"
+                       Label="Usuários"
+                       Variant="Variant.Filled"
+                       AnchorOrigin="Origin.BottomCenter">
 
-        @foreach (User user in Users)
-        {
-            <MudSelectItem Value=@user />
-        }
-    </MudSelect>
-
-
-    <MudField Label="Usuário selecionado"
-              Dense="true"
-              Variant="Variant.Filled">
-        @selectedUser?.Name
-    </MudField>
+                @foreach (User user in Users)
+                {
+                    <MudSelectItem Value=@user />
+                }
+            </MudSelect>
 
 
-    <MudSelect 
-               @bind-value="@selectedProfile"
-               T="Profile"
-               ToStringFunc="@getProfileString"
-               Dense="true"
-               Margin="Margin.Dense"
-               Clearable
-               Disabled=@(selectedUser != null ? false : true)
-               Label="Perfis"
-               Variant="Variant.Filled"
-               AnchorOrigin="Origin.BottomCenter">
+            <MudSelect @bind-value="@selectedProfile"
+                       T="Profile"
+                       ToStringFunc="@getProfileString"
+                       Strict="true"
+                       Dense="true"
+                       Margin="Margin.Dense"
+                       Clearable
+                       Disabled="@getProfileFieldDisable()"
+                       Label="Perfis"
+                       Variant="Variant.Filled"
+                       AnchorOrigin="Origin.BottomCenter">
 
-        @foreach (Profile profile in getProfiles())
-        {
-            <MudSelectItem Value="@profile" />
-        }
-    </MudSelect>
+                @foreach (Profile profile in getProfiles())
+                {
+                    <MudSelectItem Value="@profile" />
+                }
+            </MudSelect>
 
 
-    <MudSelect 
-               @bind-value="@selectedAuthorizedAction"
-               T="EActions"
-               ToStringFunc="@getAuthorizedActionString"
-               Dense="true"
-               Margin="Margin.Dense"
-               Clearable
-               Disabled=@(selectedProfile != null ? false : true)
-               Label="Ações permitidas"
-               Variant="Variant.Filled"
-               AnchorOrigin="Origin.BottomCenter">
+            <MudSelect @bind-value="@selectedAuthorizedAction"
+                       T="EActions"
+                       ToStringFunc="@getAuthorizedActionString"
+                       Strict="true"
+                       Dense="true"
+                       Margin="Margin.Dense"
+                       Clearable
+                       Disabled=@getAuthorizedActionsFieldDisable()
+                       Label="Ações permitidas"
+                       Variant="Variant.Filled"
+                       AnchorOrigin="Origin.BottomCenter">
 
-        @foreach (var action in getAuthorizedActions())
-        {
-            <MudSelectItem Value="@action" />
-        }
-    </MudSelect>
+                @foreach (var action in getAuthorizedActions())
+                {
+                    <MudSelectItem Value="@action" />
+                }
+            </MudSelect>
+        </MudItem>
+
+
+        <MudItem xs="6">
+            <div class="d-flex flex-column">
+                <MudText><b>Usuário:</b> @getNameString(selectedUser)</MudText>
+                <MudText><b>Perfil:</b> @getProfileString(selectedProfile)</MudText>
+                <MudText><b>Ação:</b> @getAuthorizedActionString(selectedAuthorizedAction)</MudText>
+            </div>
+        </MudItem>
+    </MudGrid>
 
 
     <div class="table">
-        <MudTable Items="@Users" Dense="true" Hover="true" Bordered="false" Striped="true" Filter="new Func<User,bool>(FilterFunction)" @bind-SelectedItem="selectedUser">
+        <MudTable Items="@Users" Dense="true" Hover="true" Bordered="false" Striped="true" Filter="new Func<User,bool>(FilterFunction)" @bind-SelectedItem="selectedUser" >
             <ToolBarContent>
                 <MudText Typo="Typo.h6">Usuários</MudText>
                 <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0"></MudTextField>
@@ -99,7 +106,7 @@
                 <MudTd DataLabel="Cpf">@context.Cpf</MudTd>
             </RowTemplate>
             <PagerContent>
-                <MudTablePager />
+                <MudTablePager  />
             </PagerContent>
         </MudTable>
     </div>
@@ -113,7 +120,6 @@
     public User selectedUser = null;
     public Profile selectedProfile = null;
     public EActions selectedAuthorizedAction;
-
 
     protected override void OnInitialized() {
         Users = ExampleUsers.ExampleListUsers;
@@ -138,32 +144,34 @@
 
     Func<User, string> getNameString = p => p?.Name;
     Func<Profile, string> getProfileString = p => p == null || p?.AccessLevel == EAccessLevel.Nothing? "" : p?.AccessLevel.ToString();
-    Func<EActions, string> getAuthorizedActionString = p => p.ToString() == "0" ? "" : p.ToString();
+    Func<EActions, string> getAuthorizedActionString = p => p == 0 ? "" : p.ToString();
 
-    private List<Profile> getProfiles()
+    private List<Profile> getProfiles() => selectedUser != null ? selectedUser.Profiles : new List<Profile>();
+    private List<EActions> getAuthorizedActions() => selectedProfile != null ? selectedProfile.AuthorizedActions : new List<EActions>();
+
+    private bool getProfileFieldDisable()
     {
-        if (selectedUser != null)
+        if (selectedUser == null)
         {
-            return selectedUser.Profiles;
-        } 
-        else
-        {
-            return new List<Profile>() { new Profile() };
+            selectedProfile = null;
+            return true;
         }
+        else return false;
     }
 
-    private List<EActions> getAuthorizedActions()
+    private bool getAuthorizedActionsFieldDisable()
     {
-        var actions = new List<EActions>();
-        try
+        if (selectedUser == null || selectedProfile == null)
         {
-            actions = selectedProfile.AuthorizedActions;
+            selectedAuthorizedAction = 0;
+            return true;
         }
-        catch
-        {
-            actions.Add(EActions.Action1);
-        }
+        else return false;
+    }
 
-        return actions;
+    private void ResetFields()
+    {
+        selectedProfile = null;
+        selectedAuthorizedAction = 0;
     }
 }
