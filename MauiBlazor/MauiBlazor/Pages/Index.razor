@@ -22,7 +22,6 @@
                        ToStringFunc="getNameString"
                        Strict="true"
                        Dense="true"
-                       TextUpdateSuppression="false"
                        Margin="Margin.Dense"
                        Clearable="true"
                        Label="Usuários"
@@ -31,7 +30,7 @@
 
                 @foreach (User user in Users)
                 {
-                    <MudSelectItem Value=@user />
+                    <MudSelectItem Value=@user>@user?.Name</MudSelectItem>
                 }
             </MudSelect>
 
@@ -80,6 +79,7 @@
                 <MudText><b>Usuário:</b> @getNameString(selectedUser)</MudText>
                 <MudText><b>Perfil:</b> @getProfileString(selectedProfile)</MudText>
                 <MudText><b>Ação:</b> @getAuthorizedActionString(selectedAuthorizedAction)</MudText>
+                @*<MudButton><b>Submit</b></MudButton>*@
             </div>
         </MudItem>
     </MudGrid>
@@ -114,7 +114,7 @@
 
    
 @code{
-    public IList<User> Users { get; set; }
+    public IEnumerable<User> Users { get; set; }
 
     private string searchString = "";
     public User selectedUser = null;
@@ -167,11 +167,5 @@
             return true;
         }
         else return false;
-    }
-
-    private void ResetFields()
-    {
-        selectedProfile = null;
-        selectedAuthorizedAction = 0;
     }
 }
